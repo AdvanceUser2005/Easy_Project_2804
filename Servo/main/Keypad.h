@@ -8,21 +8,22 @@ class Keypad
 public:
     Keypad();
 
-    // pin defaults to A0 - this design only ever needs one analog input
-    void attach(uint8_t analogPin = A0);
+    // Initializes the TCA8418 on D2 (SCL) and D3 (SDA).
+    // The argument is retained for compatibility and is ignored.
+    bool attach(uint8_t analogPin = A0);
 
     // Returns the pressed key ('1'-'9', '*', '0', '#') exactly once per
     // press (debounced, edge-triggered). Returns 0 ('\0') if no new key
     // press is detected (idle, still held, or still bouncing).
     char getKey();
 
-    // Raw ADC reading straight from the pin, 0-1023. Useful for
-    // calibration - print this in a test sketch and press each button
-    // to confirm/adjust the thresholds in decode() below.
+    // Returns the last raw TCA8418 event byte, or -1 before initialization.
     int readRaw();
 
 private:
-    uint8_t _pin;
+    uint8_t _address;
+    bool _initialized;
+    int _lastRawEvent;
 
     char _stableKey;          // last debounced key state ('\0' = idle)
     char _lastReportedKey;    // last key actually returned by getKey()
@@ -31,7 +32,9 @@ private:
 
     static const unsigned long DEBOUNCE_MS;
 
-    char decode(int adcValue) const;
+    bool writeRegister(uint8_t reg, uint8_t value);
+    bool readRegister(uint8_t reg, uint8_t &value);
+    char decode(uint8_t eventCode) const;
 };
 
 #endif

@@ -9,7 +9,9 @@ int i=0;
 void setup() {
 
     Serial.begin(9600);
-    myKeypad.attach(A0);
+    if (!myKeypad.attach()) {
+        Serial.println("TCA8418 initialization failed; check I2C wiring and pull-ups.");
+    }
     myServo.attach();
 
 }
