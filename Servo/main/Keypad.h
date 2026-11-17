@@ -2,13 +2,14 @@
 #define CUSTOM_KEYPAD_H
 
 #include <Arduino.h>
+#include "TCA8418.h"
 
 class Keypad
 {
 public:
     Keypad();
 
-    // Initializes the TCA8418 on D2 (SCL) and D3 (SDA).
+    // Initializes the custom TCA8418 driver on the board's hardware I2C pins.
     // The argument is retained for compatibility and is ignored.
     bool attach(uint8_t analogPin = A0);
 
@@ -21,7 +22,7 @@ public:
     int readRaw();
 
 private:
-    uint8_t _address;
+    TCA8418 _tca;
     bool _initialized;
     int _lastRawEvent;
 
@@ -32,8 +33,6 @@ private:
 
     static const unsigned long DEBOUNCE_MS;
 
-    bool writeRegister(uint8_t reg, uint8_t value);
-    bool readRegister(uint8_t reg, uint8_t &value);
     char decode(uint8_t eventCode) const;
 };
 
